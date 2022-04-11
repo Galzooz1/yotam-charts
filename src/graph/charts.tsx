@@ -43,14 +43,14 @@ const Charts: React.FC<ChartsProps> = () => {
     );
 
     const changeGraph = (e: any) => {
-        let buttonData: any = e.value;
+        let buttonData: any = e;
         let tempData: any = data;
-        let changeKeys: any = keys;
+        let changeKeys: any = { ...keys };
         console.log(changeKeys)
-        if(changeKeys.keyStatus[buttonData]) {
+        if (changeKeys.keyStatus[buttonData]) {
             changeKeys.keyStatus[buttonData] = false;
             changeKeys.key.splice(changeKeys.key.indexOf(buttonData), 1)
-        }else {
+        } else {
             changeKeys.keyStatus[buttonData] = true;
             changeKeys.key.push(buttonData);
         }
@@ -67,7 +67,6 @@ const Charts: React.FC<ChartsProps> = () => {
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
-                    <Legend onClick={changeGraph} />
                     {keys.key.map((item: any, dataIndex: any) => {
                         return (
                             <Bar key={item} dataKey={item}>
@@ -86,6 +85,13 @@ const Charts: React.FC<ChartsProps> = () => {
                     })}
                 </BarChart>
             </ResponsiveContainer>
+            <div style={{ display: "flex", justifyContent: "space-evenly", width: "50%", margin: "12px auto" }}>
+                {dataKeys.map((item: any, i: number) => {
+                    return (
+                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", borderBottom: `${keys.groupColors[i]} 1px solid`, color:`${keys.groupColors[i]}`}} key={item}>{item}</div>
+                    )
+                })}
+            </div>
             <p className="content">{`Amount of "${activeItem.name}": ${activeKey}`}</p>
         </div>
     )
