@@ -25,9 +25,12 @@ const Charts: React.FC<ChartsProps> = () => {
             returns: true,
             visitTime: true,
         },
-        groupColors: [
-            '#0088FE', '#00C49F', '#FFBB28', '#FF8042'
-        ]
+        groupColors:{
+            total_money: '#0088FE',
+            amount: '#00C49F',
+            returns: '#FFBB28',
+            visitTime: '#FF8042',
+        }
 
     });
 
@@ -69,26 +72,20 @@ const Charts: React.FC<ChartsProps> = () => {
                     <Tooltip />
                     {keys.key.map((item: any, dataIndex: any) => {
                         return (
-                            <Bar key={item} dataKey={item}>
-                                {keys.key.map((entry: any, keysIndex: number) => {
-                                    return (
-                                        <Cell
-                                            onClick={() => handleClick(entry, keysIndex, dataIndex)}
-                                            cursor="pointer"
-                                            fill={keysIndex === activeKeysIndex && dataIndex === activeDataIndex ? "#8884d8" : keys.groupColors[keysIndex]}
-                                            key={`cell-${keysIndex}`}
-                                        />
-                                    )
-                                })}
-                            </Bar>
+                            <Bar key={item} dataKey={item}
+                                 onClick={() => handleClick(item, dataIndex, dataIndex)}
+                                 cursor="pointer"
+                                 fill={keys.groupColors[item]}
+                            />
+
                         )
                     })}
                 </BarChart>
             </ResponsiveContainer>
             <div style={{ display: "flex", justifyContent: "space-evenly", width: "50%", margin: "12px auto" }}>
-                {dataKeys.map((item: any, i: number) => {
+                {dataKeys.map((item: any) => {
                     return (
-                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", borderBottom: `${keys.groupColors[i]} 1px solid`, color:`${keys.groupColors[i]}`}} key={item}>{item}</div>
+                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", borderBottom: `${keys.groupColors[item]} 1px solid`, color:`${keys.groupColors[item]}`}} key={item}>{item}</div>
                     )
                 })}
             </div>
