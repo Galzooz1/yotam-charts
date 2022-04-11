@@ -24,15 +24,15 @@ const Charts: React.FC<ChartsProps> = () => {
             amount: true,
             returns: true,
             visitTime: true,
-        }
+        },
+        groupColors: [
+            '#0088FE', '#00C49F', '#FFBB28', '#FF8042'
+        ]
+
     });
 
-    useEffect(() => {
-        console.log("work")
-    }, [data])
     const activeItem: IData = data[activeDataIndex];
     const activeKey: IDataKeys | string = dataKeys[activeKeysIndex];
-    const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     const handleClick = useCallback(
         (entry: any, keysIndex: number, dataIndex: number) => {
@@ -43,23 +43,17 @@ const Charts: React.FC<ChartsProps> = () => {
     );
 
     const changeGraph = (e: any) => {
+        let buttonData: any = e.value;
+        let tempData: any = data;
         let changeKeys: any = keys;
-        let tempData: IData[] = data;
-        for (let key of tempData) {
-            console.log(key)
-            // console.log(e.value);
-            if (e.value === key) {
-                setMyData(myData.filter(data => key))
-                // if (changeKeys.keyStatus[key]) {
-                //     changeKeys.keyStatus[key] = false;
-                //     changeKeys.key.splice(changeKeys.key.indexOf(0), 1);
-                // } else {
-                //     changeKeys.keyStatus[key] = true;
-                //     changeKeys.key.push(0);
-                // }
-            }
+        console.log(changeKeys)
+        if(changeKeys.keyStatus[buttonData]) {
+            changeKeys.keyStatus[buttonData] = false;
+            changeKeys.key.splice(changeKeys.key.indexOf(buttonData), 1)
+        }else {
+            changeKeys.keyStatus[buttonData] = true;
+            changeKeys.key.push(buttonData);
         }
-        console.log(data);
         console.log(changeKeys)
         setKeys(changeKeys);
     }
@@ -74,7 +68,7 @@ const Charts: React.FC<ChartsProps> = () => {
                     <YAxis />
                     <Tooltip />
                     <Legend onClick={changeGraph} />
-                    {dataKeys.map((item, dataIndex) => {
+                    {keys.key.map((item: any, dataIndex: any) => {
                         return (
                             <Bar key={item} dataKey={item}>
                                 {keys.key.map((entry: any, keysIndex: number) => {
@@ -82,7 +76,7 @@ const Charts: React.FC<ChartsProps> = () => {
                                         <Cell
                                             onClick={() => handleClick(entry, keysIndex, dataIndex)}
                                             cursor="pointer"
-                                            fill={keysIndex === activeKeysIndex && dataIndex === activeDataIndex ? "#8884d8" : colors[keysIndex]}
+                                            fill={keysIndex === activeKeysIndex && dataIndex === activeDataIndex ? "#8884d8" : keys.groupColors[keysIndex]}
                                             key={`cell-${keysIndex}`}
                                         />
                                     )
