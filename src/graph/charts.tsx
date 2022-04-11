@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 import { data, dataKeys } from './data';
 import { IData, IDataKeys } from './interface';
 
@@ -25,7 +25,7 @@ const Charts: React.FC<ChartsProps> = () => {
             returns: true,
             visitTime: true,
         },
-        groupColors:{
+        groupColors: {
             total_money: '#0088FE',
             amount: '#00C49F',
             returns: '#FFBB28',
@@ -69,14 +69,16 @@ const Charts: React.FC<ChartsProps> = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    {/* <Tooltip /> */}
                     {keys.key.map((item: any, dataIndex: any) => {
                         return (
                             <Bar key={item} dataKey={item}
-                                 onClick={() => handleClick(item, dataIndex, dataIndex)}
-                                 cursor="pointer"
-                                 fill={keys.groupColors[item]}
-                            />
+                                onClick={() => handleClick(item, dataIndex, dataIndex)}
+                                cursor="pointer"
+                                fill={keys.groupColors[item]}
+                            >
+                                <LabelList dataKey={item} />
+                            </Bar>
 
                         )
                     })}
@@ -85,7 +87,10 @@ const Charts: React.FC<ChartsProps> = () => {
             <div style={{ display: "flex", justifyContent: "space-evenly", width: "50%", margin: "12px auto" }}>
                 {dataKeys.map((item: any) => {
                     return (
-                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", borderBottom: `${keys.groupColors[item]} 1px solid`, color:`${keys.groupColors[item]}`}} key={item}>{item}</div>
+                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", display: "flex", alignItems: "center" }} key={item}>
+                            <div style={{ width: "15px", height: "15px", marginRight: "4px", alignSelf: "flex-end", backgroundColor: keys.groupColors[item] }}></div>
+                            {item}
+                        </div>
                     )
                 })}
             </div>
