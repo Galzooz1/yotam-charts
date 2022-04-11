@@ -25,9 +25,12 @@ const Charts: React.FC<ChartsProps> = () => {
             returns: true,
             visitTime: true,
         },
-        groupColors: [
-            '#0088FE', '#00C49F', '#FFBB28', '#FF8042'
-        ]
+        groupColors:{
+            total_money: '#0088FE',
+            amount: '#00C49F',
+            returns: '#FFBB28',
+            visitTime: '#FF8042',
+        }
 
     });
 
@@ -45,7 +48,7 @@ const Charts: React.FC<ChartsProps> = () => {
     const changeGraph = (e: any) => {
         let buttonData: any = e.value;
         let tempData: any = data;
-        let changeKeys: any = keys;
+        let changeKeys: any = {...keys};
         console.log(changeKeys)
         if(changeKeys.keyStatus[buttonData]) {
             changeKeys.keyStatus[buttonData] = false;
@@ -70,18 +73,12 @@ const Charts: React.FC<ChartsProps> = () => {
                     <Legend onClick={changeGraph} />
                     {keys.key.map((item: any, dataIndex: any) => {
                         return (
-                            <Bar key={item} dataKey={item}>
-                                {keys.key.map((entry: any, keysIndex: number) => {
-                                    return (
-                                        <Cell
-                                            onClick={() => handleClick(entry, keysIndex, dataIndex)}
-                                            cursor="pointer"
-                                            fill={keysIndex === activeKeysIndex && dataIndex === activeDataIndex ? "#8884d8" : keys.groupColors[keysIndex]}
-                                            key={`cell-${keysIndex}`}
-                                        />
-                                    )
-                                })}
-                            </Bar>
+                            <Bar key={item} dataKey={item}
+                                 onClick={() => handleClick(item, dataIndex, dataIndex)}
+                                 cursor="pointer"
+                                 fill={keys.groupColors[item]}
+                            />
+
                         )
                     })}
                 </BarChart>
