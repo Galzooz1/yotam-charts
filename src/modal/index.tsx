@@ -1,21 +1,29 @@
-import React, { useCallback, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ComposedChart, ResponsiveContainer, LabelList } from 'recharts';
-import { data, dataKeys } from './data';
-import { IData, IDataKeys } from './interface';
-import ModalGraph from '../modal';
-import FileSaver from "file-saver";
+import Modal from 'react-modal';
+import { BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
+import React, {useCallback, useState} from "react";
+import {data, dataKeys} from "../graph/data";
+import {IData} from "../graph/interface";
 import { useCurrentPng } from "recharts-to-png";
+import FileSaver from "file-saver";
 
 
-
-
-interface ChartsProps {
-
+const customStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        // marginRight: '-50%',
+        transform: 'translate(-50%, -50%)',
+        width: "60%",
+        height: 400
+    },
 };
 
-const Charts: React.FC<ChartsProps> = () => {
-    const [myData, setMyData] = useState<IData[]>(data);
-    const [subData, setSubData] = useState([]);
+Modal.setAppElement('#root')
+
+const ModalGraph = (props: any) => {
+    const [myData, setMyData] = useState<IData[]>(props.data);
     const [keys, setKeys] = useState<any>({
         key: [
             'total_money',
@@ -37,8 +45,6 @@ const Charts: React.FC<ChartsProps> = () => {
         }
 
     });
-    const [modalIsOpen, setIsOpen] = useState(false);
-
 
     const [getComposedPng, {ref: composedRef, isLoading }] = useCurrentPng();
     const handleComposedDownload = useCallback(async () => {
@@ -48,41 +54,16 @@ const Charts: React.FC<ChartsProps> = () => {
         }
     }, [getComposedPng]);
 
-    function openModal() {
-        setIsOpen(true);
-    }
 
-    function closeModal() {
-        setIsOpen(false);
-    }
-
-    const createSubData = (e: any) => {
-        let Data: any = [];
-        const data = e.sub
-        for (let i = 0; i < data.length; i++) {
-            Data.push(data[i])
-        }
-        openModal();
-        setSubData(Data);
-    }
-
-    const changeGraph = (e: any) => {
-        let buttonData: any = e;
-        let tempData: any = data;
-        let changeKeys: any = { ...keys };
-        if (changeKeys.keyStatus[buttonData]) {
-            changeKeys.keyStatus[buttonData] = false;
-            changeKeys.key.splice(changeKeys.key.indexOf(buttonData), 1)
-        } else {
-            changeKeys.keyStatus[buttonData] = true;
-            changeKeys.key.push(buttonData);
-        }
-        setKeys(changeKeys);
-    }
 
     return (
-        <div>
-            <ResponsiveContainer width="100%" height={600}>
+        console.log(props.data),
+        <Modal
+            isOpen={props.isOpen}
+            onRequestClose={props.closeModal}
+            style={customStyles}
+        >
+            <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={myData} ref={composedRef}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
@@ -91,9 +72,8 @@ const Charts: React.FC<ChartsProps> = () => {
                     {keys.key.map((item: any, dataIndex: any) => {
                         return (
                             <Bar key={item} dataKey={item}
-                                onClick={(e) => createSubData(e)}
-                                cursor="pointer"
-                                fill={keys.groupColors[item]}
+                                 cursor="pointer"
+                                 fill={keys.groupColors[item]}
                             >
                                 <LabelList dataKey={item} />
                             </Bar>
@@ -106,7 +86,7 @@ const Charts: React.FC<ChartsProps> = () => {
             <div style={{ display: "flex", justifyContent: "space-evenly", width: "50%", margin: "12px auto" }}>
                 {dataKeys.map((item: any) => {
                     return (
-                        <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", display: "flex", alignItems: "center" }} key={item} >
+                        <div onClick={() => props.changeGraph(item)} style={{ margin: "0 4px", display: "flex", alignItems: "center" }} key={item} >
                             <div style={{ width: "15px", height: "15px", marginRight: "4px", alignSelf: "flex-end", backgroundColor: keys.groupColors[item] }}></div>
                             {item}
                         </div>
@@ -131,10 +111,9 @@ const Charts: React.FC<ChartsProps> = () => {
             </span>
                 )}
             </button>
+        </Modal>
+    );
+};
 
-            <ModalGraph isOpen={modalIsOpen} closeModal={closeModal} data={subData} changeGraph={changeGraph}/>
-        </div>
-    )
-}
 
-export default Charts;
+export default ModalGraph;
