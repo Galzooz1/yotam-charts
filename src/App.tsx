@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import logo from './logo.svg'
 import './App.css'
-import Charts from './graph/charts'
+import Index from './graph'
 
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 
     return (
     <div className="App">
-      <Charts />
+      <Index />
     </div>
   )
 }

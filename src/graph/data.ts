@@ -1,3 +1,5 @@
+import rn from "random-number";
+
 export const data = [
     {
         "id": 4,
@@ -537,6 +539,21 @@ export const data = [
         ]
     }
 ]
+
+const lgGen = rn.generator({
+    min: 1000,
+    max: 9999,
+    integer: true
+});
+
+export function getLgData(size = 100): Record<string, string | number>[] {
+    return Array.from({ length: size }, (_, i) => ({
+        name: `Page ${i}`,
+        uv: lgGen(),
+        pv: lgGen(),
+        amt: lgGen()
+    }));
+}
 
 export const dataKeys = [
     'total_money',

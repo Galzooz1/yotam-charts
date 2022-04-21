@@ -1,0 +1,32 @@
+.container{
+
+}
+
+.graphContainer{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0px 35px 0px 55px;
+}
+
+.downloadButtonContainer{
+    padding-top: 2px
+}
+.downloadButton{
+    height: 32px;
+    width: 32px;
+    padding: 0px;
+    border: black;
+}
+
+.regulardownloadbutton{
+    height: 32px;
+    width: 32px;
+    background: url('../../public/6421887411543238876.svg')
+}
+
+.loader{
+    height: 32px;
+    width: 32px;
+    background: url('../../public/7802441551618134425.svg')
+}

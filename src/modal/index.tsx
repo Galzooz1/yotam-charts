@@ -23,7 +23,7 @@ const customStyles = {
 Modal.setAppElement('#root')
 
 const ModalGraph = (props: any) => {
-    const [myData, setMyData] = useState<IData[]>(props.data);
+    const [myData, setMyData] = useState<IData[]>();
     const [keys, setKeys] = useState<any>({
         key: [
             'total_money',
@@ -54,12 +54,16 @@ const ModalGraph = (props: any) => {
         }
     }, [getComposedPng]);
 
+    function afterOpenModal() {
+        setMyData(props.data);
+    }
 
 
     return (
-        console.log(props.data),
+        console.log("modal", props.data),
         <Modal
             isOpen={props.isOpen}
+            onAfterOpen={afterOpenModal}
             onRequestClose={props.closeModal}
             style={customStyles}
         >
