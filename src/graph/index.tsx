@@ -90,7 +90,7 @@ const Index: React.FC<ChartsProps> = () => {
     }
 
     return (
-        <div className='container'>
+        <div className='container' >
             <div className='graphContainer'>
                 <div>
                     <h2>התפלגות מוצרים</h2>
