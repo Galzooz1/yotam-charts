@@ -1,5 +1,5 @@
-.container{
-
+body {
+    direction: rtl;
 }
 
 .graphContainer{
@@ -22,11 +22,11 @@
 .regulardownloadbutton{
     height: 32px;
     width: 32px;
-    background: url('../../public/6421887411543238876.svg')
+    background: url('/6421887411543238876.svg')
 }
 
 .loader{
     height: 32px;
     width: 32px;
-    background: url('../../public/7802441551618134425.svg')
+    background: url('/7802441551618134425.svg')
 }
