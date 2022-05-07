@@ -1,79 +1,57 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, LabelList } from "recharts";
-import { data, dataKeys } from "./data";
-import { IData } from "./interface";
+import { useEffect, useState } from "react";
+import { data as mockData, mockLegend } from "./data";
+import {Button, Modal, Select} from 'antd';
+import { GraphTypes, IData, Legends } from "./interface";
 import ModalGraph from "../modal";
-import FileSaver from "file-saver";
-import { useCurrentPng } from "recharts-to-png";
+import HorizontalBarGraph from "./HorizontalBarGraph";
+import VerticalBarGraph from "./VerticalBarGraph";
+import LegendRow from "./LegendRow";
+import _ from 'lodash';
+import { ShrinkOutlined, ExpandAltOutlined } from '@ant-design/icons';
 import "./index.css";
 
-interface ChartsProps {}
-
-const Index: React.FC<ChartsProps> = () => {
-  const [myData, setMyData] = useState<IData[]>(data);
+const Index = () => {
+  const [data, setData] = useState<IData[]>(mockData);
   const [subData, setSubData] = useState([]);
-  const [graphType, setGraphType] = useState("bars");
-  const [keys, setKeys] = useState<any>({
-    key: ["total_money", "amount", "returns", "visitTime"],
-    keyStatus: {
-      total_money: true,
-      amount: true,
-      returns: true,
-      visitTime: true,
-    },
-    groupColors: {
-      total_money: "#0088FE",
-      amount: "#00C49F",
-      returns: "#FFBB28",
-      visitTime: "#FF8042",
-    },
-  });
-  const [modalIsOpen, setIsOpen] = useState(false);
-
-  const [getComposedPng, { ref: composedRef, isLoading }] = useCurrentPng();
-  const handleComposedDownload = useCallback(async () => {
-    const png = await getComposedPng();
-    if (png) {
-      FileSaver.saveAs(png, "composed-chart.png");
-    }
-  }, [getComposedPng]);
-
-  function openModal() {
-    setIsOpen(true);
+  const [subLegend, setSubLegend] = useState({});
+  const [graphType, setGraphType] = useState<GraphTypes> ("bars");
+  const [legend, setLegend] = useState<Legends>({});
+  const [fullscreenModal, setFullscreenModal] = useState(false);
+  
+  // צריך לטעון את המידע לכאן
+  const loadData = async () => {
+    setLegend(mockLegend);
+    setData(mockData);
   }
 
-  function closeModal() {
-    setIsOpen(false);
+  // Load the data when the component is first loaded
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  // When clicking on a legend item, toggle item visibility on graph
+  const toggleVisible = (key: string) => {
+    let changeLegend: any = { ...legend };
+    changeLegend[key].visible = !changeLegend[key].visible;
+    setLegend(changeLegend);
   }
 
-  const createSubData = (e: any) => {
-    let Data: any = [];
-    const data = e.sub;
-    for (let i = 0; i < data.length; i++) {
-      Data.push(data[i]);
-    }
-    openModal();
-    setSubData(Data);
-  };
+  // When clicking on a bar, open the modal with a graph of the customers
+  const openSubGraph = (e: any) => {
+    setSubData(e.sub);
+    setSubLegend(_.cloneDeep(mockLegend));
+  }
 
-  const changeGraph = (e: any) => {
-    let buttonData: any = e;
-    let tempData: any = data;
-    let changeKeys: any = { ...keys };
-    if (changeKeys.keyStatus[buttonData]) {
-      changeKeys.keyStatus[buttonData] = false;
-      changeKeys.key.splice(changeKeys.key.indexOf(buttonData), 1);
-    } else {
-      changeKeys.keyStatus[buttonData] = true;
-      changeKeys.key.push(buttonData);
-    }
-    setKeys(changeKeys);
-  };
+  // When clicking on a legend item in the modal, toggle item visibility on graph
+  const toggleSubGraphVisible = (key: string) => {
+    let changeLegend: any = { ...subLegend };
+    changeLegend[key].visible = !changeLegend[key].visible;
+    setSubLegend(changeLegend);
+  }
 
-//   useEffect(() => {
-//     if(graphType === "bar-rotated") {
-//     }
-//   }, [graphType])
+  const ToggleFullScreen = <Button icon={fullscreenModal ? <ShrinkOutlined /> : <ExpandAltOutlined />} onClick={() => setFullscreenModal(!fullscreenModal)}/>;
+
+  const filteredLegend = Object.entries(legend).filter(([key, item]: any) => item.visible);
 
   return (
     <div className="container">
@@ -82,52 +60,21 @@ const Index: React.FC<ChartsProps> = () => {
           <h2>התפלגות מוצרים</h2>
         </div>
         <div>
-            <select value={graphType} onChange={(e) => setGraphType(e.target.value)}>
-                <option value="bars">גרף עומד</option>
-                <option value="bars-rotated">גרף שוכב</option>
-            </select>
-        </div>
-        <div className="downloadButtonContainer">
-          <button className="downloadButton" disabled={isLoading} onClick={handleComposedDownload}>
-            {isLoading ? (
-              <span className="download-button-content">
-                <i className="gg-spinner" />
-                <span className="loader"></span>
-              </span>
-            ) : (
-              <div className="regulardownloadbutton"><i /></div>
-            )}
-          </button>
+        <Select value={graphType} onChange={(value) => setGraphType(value as GraphTypes)}>
+          <Select.Option value="bars">גרף עומד</Select.Option>
+          <Select.Option value="bars-rotated">גרף שוכב</Select.Option>
+        </Select>
         </div>
       </div>
-      <div style={{direction: "ltr"}}>
-        <ResponsiveContainer width="100%" height={graphType === "bars-rotated" ? 1000 : 600}>
-            <BarChart data={myData} ref={composedRef} layout={graphType !== "bars-rotated" ? "horizontal" : "vertical"}>
-            <CartesianGrid strokeDasharray="3 3" />
-            {/* <XAxis dataKey={"name"} type="category" /> */}
-            <XAxis reversed={true} type={graphType !== "bars-rotated" ? "category" : "number"} dataKey={graphType !== "bars-rotated" ? "name" : undefined} />
-            {/* <YAxis type="number" /> */}
-            <YAxis orientation="right" type={graphType === "bars-rotated" ? "category" : "number"} dataKey={graphType === "bars-rotated" ? "name" : undefined} />
-            {keys.key.map((item: any, dataIndex: any) => {
-                return (
-                <Bar key={item} dataKey={item} onClick={(e) => createSubData(e)} cursor="pointer" fill={keys.groupColors[item]}>
-                    <LabelList dataKey={item} />
-                </Bar>
-                );
-            })}
-            </BarChart>
-        </ResponsiveContainer>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-evenly", width: "50%", margin: "12px auto", }}>
-        {dataKeys.map((item: any) => {
-          return (
-            <div onClick={() => changeGraph(item)} style={{ margin: "0 4px", display: "flex", alignItems: "center" }} key={item}>
-              <div style={{ width: "15px", height: "15px", marginRight: "4px", alignSelf: "flex-end", backgroundColor: keys.groupColors[item],}} />
-              {item}
-            </div>);
-        })}
-      </div>
-      <ModalGraph isOpen={modalIsOpen} closeModal={closeModal} data={subData} changeGraph={changeGraph} />
+      {graphType === "bars" ? (
+        <HorizontalBarGraph graphData={data} legend={filteredLegend} onBarClick={openSubGraph} />
+      ) : (
+        <VerticalBarGraph graphData={data} legend={filteredLegend} onBarClick={openSubGraph} />
+      )}
+      <LegendRow legend={legend} onItemClick={toggleVisible} />
+      <Modal title={"מידע על לקוחות"} visible={!!subData.length} onCancel={() => setSubData([])} closeIcon={<></>} okButtonProps={{style: {display: 'none'}}} cancelText="סגור" width={fullscreenModal ? '100%' : undefined}>
+        <ModalGraph data={subData} legend={subLegend} onLegendItemClick={toggleSubGraphVisible} controlRow={ToggleFullScreen} />
+      </Modal>
     </div>
   );
 };
